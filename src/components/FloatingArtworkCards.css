@@ -1,0 +1,108 @@
+.fc-scene {
+  position: relative;
+  width: 100%;
+  height: 540px;
+  overflow: visible;
+  cursor: default;
+}
+
+.fc-glow-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: visible;
+}
+
+.fc-card-wrap {
+  position: absolute;
+  will-change: transform;
+  transition: transform 0s; /* JS animates this */
+}
+
+.fc-card {
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: 18px;
+  box-shadow:
+    0 4px 20px rgba(60,80,120,0.10),
+    0 1px 4px rgba(60,80,120,0.06);
+  overflow: hidden;
+  transition: box-shadow 0.28s ease, transform 0.28s ease;
+  cursor: pointer;
+  transform-origin: center center;
+}
+
+.fc-card:hover {
+  box-shadow:
+    0 16px 48px rgba(60,200,180,0.22),
+    0 4px 16px rgba(60,80,120,0.10);
+  transform: scale(1.07) rotate(0deg) !important;
+  z-index: 50;
+}
+
+.fc-card-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  position: relative;
+  overflow: hidden;
+}
+
+.fc-card-img-inner {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.06);
+}
+
+.fc-card-body {
+  padding: 10px 12px 12px;
+}
+
+.fc-card-title {
+  font-size: 0.77rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin-bottom: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fc-card-author {
+  font-size: 0.67rem;
+  color: var(--color-gray);
+  margin-bottom: 6px;
+}
+
+.fc-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.fc-meta-item {
+  font-size: 0.63rem;
+  color: #aab0be;
+}
+
+.fc-tag {
+  font-size: 0.6rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 1024px) {
+  .fc-scene {
+    height: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .fc-scene {
+    height: 300px;
+  }
+}
