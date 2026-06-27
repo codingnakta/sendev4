@@ -11,6 +11,7 @@ function buildArtists(works) {
       map[w.author] = {
         name: w.author,
         avatarColor: w.color,
+        avatar: w.avatar,
         category: w.category,
         works: [],
         totalLikes: 0,
@@ -151,8 +152,14 @@ function ArtistCard({ artist, badge, rank }) {
 
       {/* Avatar */}
       <div className="artist-avatar-area">
-        <div className="artist-avatar" style={{ background: artist.avatarColor }}>
-          <span className="artist-initial">{artist.name[0]}</span>
+        <div
+          className="artist-avatar"
+          style={artist.avatar
+            ? { backgroundImage: `url(${artist.avatar})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+            : { background: artist.avatarColor }
+          }
+        >
+          {!artist.avatar && <span className="artist-initial">{artist.name[0]}</span>}
         </div>
         <div className="artist-badge-row">
           <span className="artist-badge">{badge}</span>
@@ -202,7 +209,10 @@ function ArtistCard({ artist, badge, rank }) {
           <div
             key={w.id}
             className="artist-work-thumb"
-            style={{ background: w.color }}
+            style={w.image
+              ? { backgroundImage: `url(${w.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+              : { background: w.color }
+            }
           />
         ))}
       </div>

@@ -632,6 +632,208 @@
   box-shadow: 0 3px 12px rgba(60,200,180,0.3);
 }
 
+/* AI Portfolio Panel */
+.ai-portfolio-panel {
+  max-width: 760px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding-bottom: 2rem;
+}
+
+.aip-card {
+  background: white;
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.aip-card-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--color-navy);
+  margin-bottom: 1rem;
+}
+
+.aip-hint {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--color-gray);
+}
+
+.aip-works-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.aip-work-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  border-radius: 10px;
+  border: 1.5px solid #eef0f5;
+  transition: border-color 0.18s;
+}
+
+.aip-work-item.selected {
+  border-color: var(--color-mint);
+  background: rgba(60,200,180,0.04);
+}
+
+.aip-work-thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.aip-work-info { flex: 1; min-width: 0; }
+
+.aip-work-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--color-navy);
+  margin-bottom: 0.1rem;
+}
+
+.aip-work-category {
+  font-size: 0.72rem;
+  color: var(--color-gray);
+  margin-bottom: 0.35rem;
+}
+
+.aip-tech-list { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+
+.aip-select-btn {
+  padding: 0.4rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1.5px solid var(--color-mint);
+  background: transparent;
+  color: var(--color-mint-dark);
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.18s, color 0.18s;
+}
+
+.aip-select-btn.selected {
+  background: var(--color-mint);
+  color: white;
+}
+
+.aip-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+
+.aip-chip {
+  padding: 0.4rem 0.9rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1.5px solid #e0e4ed;
+  background: transparent;
+  color: var(--color-navy-light);
+  transition: all 0.18s;
+}
+
+.aip-chip.selected {
+  background: var(--color-mint);
+  border-color: var(--color-mint);
+  color: white;
+}
+
+.aip-textarea {
+  width: 100%;
+  border: 1.5px solid #e0e4ed;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 0.85rem;
+  color: var(--color-navy);
+  line-height: 1.6;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.18s;
+  box-sizing: border-box;
+}
+
+.aip-textarea:focus { outline: none; border-color: var(--color-mint); }
+
+.aip-preview-toggle {
+  background: none;
+  border: none;
+  font-size: 0.8rem;
+  color: var(--color-mint-dark);
+  cursor: pointer;
+  font-weight: 600;
+  padding: 0;
+}
+
+.aip-preview-code {
+  margin-top: 1rem;
+  background: #f8f9fc;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.73rem;
+  color: #3a4460;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.aip-error {
+  background: rgba(255,107,107,0.1);
+  border: 1.5px solid rgba(255,107,107,0.3);
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+  color: #d64f4f;
+}
+
+.aip-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.aip-save-btn {
+  padding: 0.5rem 1.1rem;
+  border-radius: 20px;
+  background: var(--color-navy);
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+}
+
+.aip-result-textarea {
+  width: 100%;
+  border: 1.5px solid #e0e4ed;
+  border-radius: 10px;
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: var(--color-navy);
+  line-height: 1.8;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+  margin-bottom: 1rem;
+}
+
+.aip-result-textarea:focus { outline: none; border-color: var(--color-mint); }
+
+.aip-disclaimer {
+  font-size: 0.75rem;
+  color: #aab0be;
+  text-align: center;
+  line-height: 1.6;
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .profile-hero-inner { grid-template-columns: auto 1fr; }

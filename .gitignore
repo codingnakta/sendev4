@@ -1,3 +1,8 @@
+# Environment variables — Gemini API 키 등 민감 정보. GitHub에 올리지 마세요.
+.env
+.env.local
+.env*.local
+
 # Logs
 logs
 *.log

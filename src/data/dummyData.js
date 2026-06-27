@@ -1,3 +1,6 @@
+import exImg1 from '../assets/디자인학과졸업작품전.png';
+import exImg2 from '../assets/봄의시선.png';
+import exImg3 from '../assets/ai디지털아트페스티벌.png';
 import img1 from '../assets/1.png';
 import img2 from '../assets/2.png';
 import img3 from '../assets/3.png';
@@ -10,6 +13,18 @@ import img9 from '../assets/9.png';
 import img10 from '../assets/10.png';
 import img11 from '../assets/11.png';
 import img12 from '../assets/12.png';
+import avatar오스틴 from '../assets/오스틴.png';
+import avatar송찬의 from '../assets/송찬의.png';
+import avatar문정빈 from '../assets/문정빈.png';
+import avatar홍창기 from '../assets/홍창기.png';
+import avatar박동원 from '../assets/박동원.png';
+import avatar신민재 from '../assets/신민재.png';
+import avatar문보경 from '../assets/문보경.png';
+import avatar문성주 from '../assets/문성주.png';
+import avatar구본혁 from '../assets/구본혁.png';
+import avatar이주헌 from '../assets/이주헌.png';
+import avatar김영우 from '../assets/김영우.png';
+import avatar이정용 from '../assets/이정용.png';
 
 export const exhibitions = [
   {
@@ -25,6 +40,7 @@ export const exhibitions = [
     organizer: '홍익대학교 디자인학과',
     location: '온라인 전시관 A',
     tags: ['졸업전시', 'UI/UX', '3D', '브랜딩'],
+    image: exImg1,
   },
   {
     id: 2,
@@ -39,6 +55,7 @@ export const exhibitions = [
     organizer: '서울예술대학교 일러스트학과',
     location: '온라인 전시관 B',
     tags: ['일러스트', '수채화', '디지털아트', '봄'],
+    image: exImg2,
   },
   {
     id: 3,
@@ -53,6 +70,7 @@ export const exhibitions = [
     organizer: 'Showfolio 운영팀',
     location: '온라인 전시관 C',
     tags: ['AI아트', '디지털', '인터랙티브', '실험'],
+    image: exImg3,
   },
 ];
 
@@ -74,6 +92,7 @@ export const works = [
     techStack: ['Figma', 'Blender', 'After Effects'],
     process: ['리서치 및 사용자 인터뷰', '와이어프레임 설계', '프로토타입 제작', '사용성 테스트', '최종 디자인 완성'],
     image: img1,
+    avatar: avatar오스틴,
     featured: true,
   },
   {
@@ -92,6 +111,7 @@ export const works = [
     techStack: ['Figma', 'Principle', 'Illustrator'],
     process: ['경쟁사 분석', '페르소나 설정', '정보구조 설계', 'UI 시스템 구축', '프로토타입 검증'],
     image: img2,
+    avatar: avatar송찬의,
     featured: true,
   },
   {
@@ -110,6 +130,7 @@ export const works = [
     techStack: ['Procreate', 'Photoshop'],
     process: ['스케치 및 구도 연구', '색채 팔레트 개발', '디지털 채색', '텍스처 작업', '시리즈 완성'],
     image: img3,
+    avatar: avatar문정빈,
     featured: true,
   },
   {
@@ -128,6 +149,7 @@ export const works = [
     techStack: ['Rhino', 'KeyShot', 'AutoCAD'],
     process: ['자연 형태 리서치', '스케치 50선', '3D 목업', '소재 연구', '최종 렌더링'],
     image: img4,
+    avatar: avatar홍창기,
     featured: true,
   },
   // Exhibition 2 — 봄의 시선
@@ -147,6 +169,7 @@ export const works = [
     techStack: ['Blender', 'Cinema 4D', 'Unity'],
     process: ['컨셉 기획', '시나리오 작성', '3D 모델링', '파티클 시스템 구현', '인터랙션 개발'],
     image: img5,
+    avatar: avatar박동원,
     featured: false,
   },
   {
@@ -165,6 +188,7 @@ export const works = [
     techStack: ['Illustrator', 'After Effects'],
     process: ['한글 구조 분석', '실험적 해체', '모션 스토리보드', '애니메이션 제작', '사운드 싱크'],
     image: img6,
+    avatar: avatar신민재,
     featured: false,
   },
   {
@@ -183,6 +207,7 @@ export const works = [
     techStack: ['Figma', 'Stable Diffusion', 'Blender'],
     process: ['사용자 리서치', '컨셉 스케치', 'AI 이미지 실험', '3D 모델링', '인터랙션 시나리오'],
     image: img7,
+    avatar: avatar문보경,
     featured: false,
   },
   {
@@ -201,6 +226,7 @@ export const works = [
     techStack: ['Figma', 'Lottie', 'ProtoPie'],
     process: ['마인드맵', '플로우차트', 'UI 키트 제작', '마이크로 인터랙션 설계', 'ProtoPie 연동'],
     image: img8,
+    avatar: avatar문성주,
     featured: false,
   },
   // Exhibition 3 — AI & 디지털 아트
@@ -220,6 +246,7 @@ export const works = [
     techStack: ['Blender', 'Substance Painter'],
     process: ['레퍼런스 수집', '씬 구성', '모델링 및 리깅', '텍스처링', '라이팅 및 렌더링'],
     image: img9,
+    avatar: avatar구본혁,
     featured: false,
   },
   {
@@ -238,6 +265,7 @@ export const works = [
     techStack: ['After Effects', 'Premiere Pro', 'Cinema 4D'],
     process: ['사운드 채집', '파형 분석', '모션 그래픽 설계', '영상 편집', '사운드 믹싱'],
     image: img10,
+    avatar: avatar이주헌,
     featured: false,
   },
   {
@@ -256,6 +284,7 @@ export const works = [
     techStack: ['Stable Diffusion', 'Photoshop', 'Midjourney'],
     process: ['세계관 기획', 'LoRA 모델 훈련', '이미지 생성 실험', '후보정 작업', '시리즈 편집'],
     image: img11,
+    avatar: avatar김영우,
     featured: false,
   },
   {
@@ -274,6 +303,7 @@ export const works = [
     techStack: ['p5.js', 'D3.js', 'Seoul Open API'],
     process: ['데이터 탐색', '시각화 알고리즘 설계', '인터랙션 구현', '실시간 API 연동', '퍼포먼스 최적화'],
     image: img12,
+    avatar: avatar이정용,
     featured: false,
   },
 ];
@@ -391,7 +421,7 @@ export const notices = [
 export const myPageUser = {
   name: '홍창기',
   username: '@hongchangki_design',
-  avatar: null,
+  avatar: avatar홍창기,
   avatarColor: 'linear-gradient(135deg, #3cc8b4 0%, #2aa898 100%)',
   bio: '그래픽 디자이너 & 3D 아티스트 | 홍익대학교 디자인학과 재학 중 | 아름다운 것들을 만드는 것을 좋아합니다 ✦',
   major: '시각디자인',

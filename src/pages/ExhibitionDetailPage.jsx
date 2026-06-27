@@ -22,7 +22,13 @@ export default function ExhibitionDetailPage() {
   return (
     <main className="ex-detail">
       {/* Hero */}
-      <section className="ex-detail-hero" style={{ background: exhibition.color }}>
+      <section
+        className="ex-detail-hero"
+        style={exhibition.image
+          ? { backgroundImage: `url(${exhibition.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+          : { background: exhibition.color }
+        }
+      >
         <div className="ex-detail-hero-overlay" />
         <div className="container ex-detail-hero-inner">
           <button className="back-btn" onClick={() => navigate(-1)}>
@@ -122,7 +128,13 @@ export default function ExhibitionDetailPage() {
         <div className="artist-list">
           {exhibitionWorks.map((work) => (
             <Link key={work.id} to={`/works/${work.id}`} className="artist-chip">
-              <div className="artist-avatar" style={{ background: work.color }} />
+              <div
+                className="artist-avatar"
+                style={work.avatar
+                  ? { backgroundImage: `url(${work.avatar})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  : { background: work.color }
+                }
+              />
               <div>
                 <p className="artist-name">{work.author}</p>
                 <p className="artist-work">{work.title}</p>
@@ -140,7 +152,13 @@ export default function ExhibitionDetailPage() {
             .filter((e) => e.id !== exhibition.id)
             .map((e) => (
               <Link key={e.id} to={`/exhibitions/${e.id}`} className="other-card">
-                <div className="other-card-img" style={{ background: e.color }} />
+                <div
+                  className="other-card-img"
+                  style={e.image
+                    ? { backgroundImage: `url(${e.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    : { background: e.color }
+                  }
+                />
                 <div className="other-card-body">
                   <span className={`other-status ${e.status === '진행중' ? 'active' : 'ended'}`}>
                     {e.status}

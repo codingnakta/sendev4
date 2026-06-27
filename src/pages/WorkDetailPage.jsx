@@ -73,7 +73,13 @@ export default function WorkDetailPage() {
 
           {/* Author */}
           <div className="work-author-row">
-            <div className="work-author-avatar" style={{ background: work.color }} />
+            <div
+              className="work-author-avatar"
+              style={work.avatar
+                ? { backgroundImage: `url(${work.avatar})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                : { background: work.color }
+              }
+            />
             <div>
               <p className="work-author-name">{work.author}</p>
               <p className="work-author-sub">{work.category}</p>

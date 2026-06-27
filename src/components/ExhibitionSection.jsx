@@ -16,7 +16,13 @@ export default function ExhibitionSection({ exhibitions }) {
         <div className="exhibition-grid">
           {exhibitions.map((ex) => (
             <Link key={ex.id} to={`/exhibitions/${ex.id}`} className="ex-card">
-              <div className="ex-card-img" style={{ background: ex.color }}>
+              <div
+                className="ex-card-img"
+                style={ex.image
+                  ? { backgroundImage: `url(${ex.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  : { background: ex.color }
+                }
+              >
                 <div className="ex-img-overlay" />
                 <span className={`ex-status ${ex.status === '진행중' ? 'active' : 'ended'}`}>
                   {ex.status}

@@ -12,11 +12,19 @@ export default function SummarySection({ featuredExhibition, popularWorks, stati
             <Link to={`/exhibitions/${featuredExhibition.id}`} className="more-link">더보기</Link>
           </div>
           <Link to={`/exhibitions/${featuredExhibition.id}`} className="featured-content">
-            <div className="featured-img" style={{ background: featuredExhibition.color }}>
-              <div className="featured-img-shapes">
-                <div className="shape shape-1" />
-                <div className="shape shape-2" />
-              </div>
+            <div
+              className="featured-img"
+              style={featuredExhibition.image
+                ? { backgroundImage: `url(${featuredExhibition.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                : { background: featuredExhibition.color }
+              }
+            >
+              {!featuredExhibition.image && (
+                <div className="featured-img-shapes">
+                  <div className="shape shape-1" />
+                  <div className="shape shape-2" />
+                </div>
+              )}
             </div>
             <div className="featured-info">
               <h3 className="featured-title">{featuredExhibition.title}</h3>
@@ -39,7 +47,13 @@ export default function SummarySection({ featuredExhibition, popularWorks, stati
           <div className="popular-list">
             {popularWorks.map((work) => (
               <Link key={work.id} to={`/works/${work.id}`} className="popular-item">
-                <div className="popular-img" style={{ background: work.color }} />
+                <div
+                  className="popular-img"
+                  style={work.image
+                    ? { backgroundImage: `url(${work.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    : { background: work.color }
+                  }
+                />
                 <div className="popular-info">
                   <p className="popular-title">{work.title}</p>
                   <p className="popular-author">{work.author}</p>
