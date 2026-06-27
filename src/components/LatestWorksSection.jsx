@@ -16,7 +16,13 @@ export default function LatestWorksSection({ works }) {
         <div className="works-grid">
           {works.map((work) => (
             <Link key={work.id} to={`/works/${work.id}`} className="work-card">
-              <div className="work-card-img" style={{ background: work.color }}>
+              <div
+                className="work-card-img"
+                style={work.image
+                  ? { backgroundImage: `url(${work.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  : { background: work.color }
+                }
+              >
                 <div className="work-card-overlay">
                   <div className="work-hover-info">
                     <p className="work-desc-preview">{work.description}</p>

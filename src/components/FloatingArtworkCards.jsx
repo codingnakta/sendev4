@@ -129,7 +129,10 @@ export default function FloatingArtworkCards({ works }) {
             >
               <div
                 className="fc-card-img"
-                style={{ background: work.color }}
+                style={work.image
+                  ? { backgroundImage: `url(${work.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  : { background: work.color }
+                }
               >
                 <div className="fc-card-img-inner" />
               </div>

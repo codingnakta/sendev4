@@ -39,7 +39,13 @@ export default function WorkDetailPage() {
       <div className="work-detail-inner container">
         {/* Left: image */}
         <div className="work-detail-left">
-          <div className="work-detail-img" style={{ background: work.color }}>
+          <div
+            className="work-detail-img"
+            style={work.image
+              ? { backgroundImage: `url(${work.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+              : { background: work.color }
+            }
+          >
             <div className="work-detail-img-glow" />
           </div>
 
@@ -134,7 +140,13 @@ export default function WorkDetailPage() {
           <div className="related-grid">
             {relatedWorks.map((rw) => (
               <Link key={rw.id} to={`/works/${rw.id}`} className="related-card">
-                <div className="related-img" style={{ background: rw.color }} />
+                <div
+                  className="related-img"
+                  style={rw.image
+                    ? { backgroundImage: `url(${rw.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                    : { background: rw.color }
+                  }
+                />
                 <div className="related-body">
                   <div className="related-top">
                     <p className="related-work-title">{rw.title}</p>

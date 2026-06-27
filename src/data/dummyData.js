@@ -1,3 +1,16 @@
+import img1 from '../assets/1.png';
+import img2 from '../assets/2.png';
+import img3 from '../assets/3.png';
+import img4 from '../assets/4.png';
+import img5 from '../assets/5.png';
+import img6 from '../assets/6.png';
+import img7 from '../assets/7.png';
+import img8 from '../assets/8.png';
+import img9 from '../assets/9.png';
+import img10 from '../assets/10.png';
+import img11 from '../assets/11.png';
+import img12 from '../assets/12.png';
+
 export const exhibitions = [
   {
     id: 1,
@@ -60,6 +73,7 @@ export const works = [
       '음악을 시각적으로 경험하는 새로운 뮤직 플레이어 앱 디자인입니다. 음파의 파형을 인터랙티브하게 시각화하여 사용자가 음악을 보고 느낄 수 있도록 기획했습니다. 다크 테마를 기반으로 몰입감 있는 UI를 구성했으며, 스와이프 제스처를 활용한 직관적인 UX를 구현했습니다.',
     techStack: ['Figma', 'Blender', 'After Effects'],
     process: ['리서치 및 사용자 인터뷰', '와이어프레임 설계', '프로토타입 제작', '사용성 테스트', '최종 디자인 완성'],
+    image: img1,
     featured: true,
   },
   {
@@ -77,6 +91,7 @@ export const works = [
       '식단 관리와 영양 분석을 도와주는 헬스케어 앱 디자인입니다. 사용자가 먹은 음식을 손쉽게 기록하고, AI 기반 영양 분석을 통해 건강한 식단을 유지할 수 있도록 돕습니다. 파스텔 톤의 따뜻한 색감과 친근한 일러스트를 활용하여 건강 관리가 즐겁게 느껴지도록 디자인했습니다.',
     techStack: ['Figma', 'Principle', 'Illustrator'],
     process: ['경쟁사 분석', '페르소나 설정', '정보구조 설계', 'UI 시스템 구축', '프로토타입 검증'],
+    image: img2,
     featured: true,
   },
   {
@@ -94,6 +109,7 @@ export const works = [
       '자연과 도시가 공존하는 이상적인 풍경을 담은 일러스트 시리즈입니다. 인간의 손길이 닿기 전 자연의 순수함과, 현대 도시의 역동성이 조화롭게 어우러지는 상상 속 풍경을 10점의 연작으로 표현했습니다.',
     techStack: ['Procreate', 'Photoshop'],
     process: ['스케치 및 구도 연구', '색채 팔레트 개발', '디지털 채색', '텍스처 작업', '시리즈 완성'],
+    image: img3,
     featured: true,
   },
   {
@@ -111,6 +127,7 @@ export const works = [
       '자연의 곡선에서 영감을 받은 미니멀 체어 디자인입니다. 나무의 결과 물의 흐름에서 파생된 유기적인 곡선을 의자의 구조에 적용했습니다. 심미성과 인체공학을 모두 충족하는 디자인을 목표로, 앉았을 때의 편안함과 시각적 아름다움을 동시에 추구했습니다.',
     techStack: ['Rhino', 'KeyShot', 'AutoCAD'],
     process: ['자연 형태 리서치', '스케치 50선', '3D 목업', '소재 연구', '최종 렌더링'],
+    image: img4,
     featured: true,
   },
   // Exhibition 2 — 봄의 시선
@@ -129,6 +146,7 @@ export const works = [
       '기억과 망각을 3D 조형물로 표현한 인터랙티브 작품입니다. 인간의 기억이 시간이 지남에 따라 조각나고 왜곡되는 과정을 파티클 시뮬레이션으로 시각화했습니다. 관람자가 마우스를 움직이면 조형물이 흩어지고 다시 모이는 인터랙션을 구현했습니다.',
     techStack: ['Blender', 'Cinema 4D', 'Unity'],
     process: ['컨셉 기획', '시나리오 작성', '3D 모델링', '파티클 시스템 구현', '인터랙션 개발'],
+    image: img5,
     featured: false,
   },
   {
@@ -146,6 +164,7 @@ export const works = [
       '한글 자음과 모음의 조형적 가능성을 탐구하는 타이포그래피 실험 시리즈입니다. ㄱ부터 ㅎ까지 각 자음의 획 구조를 분해하고 재조합하여 새로운 시각적 패턴과 리듬을 만들어냈습니다. 모션 그래픽으로 제작하여 정적인 문자에 생명을 불어넣었습니다.',
     techStack: ['Illustrator', 'After Effects'],
     process: ['한글 구조 분석', '실험적 해체', '모션 스토리보드', '애니메이션 제작', '사운드 싱크'],
+    image: img6,
     featured: false,
   },
   {
@@ -163,6 +182,7 @@ export const works = [
       'AI 반려로봇 컨셉 디자인 및 인터랙션 프로토타입입니다. 외로움을 느끼는 1인 가구를 위한 감성적 AI 컴패니언 로봇을 디자인했습니다. 감정을 표현하는 표정 시스템과 자연스러운 제스처 모션을 설계했으며, Stable Diffusion을 활용하여 다양한 외관 시안을 탐구했습니다.',
     techStack: ['Figma', 'Stable Diffusion', 'Blender'],
     process: ['사용자 리서치', '컨셉 스케치', 'AI 이미지 실험', '3D 모델링', '인터랙션 시나리오'],
+    image: img7,
     featured: false,
   },
   {
@@ -180,6 +200,7 @@ export const works = [
       '명상과 집중을 돕는 마음챙김 앱 UI/UX 디자인입니다. 바쁜 일상 속에서 잠깐의 휴식과 집중 시간을 갖도록 돕는 앱입니다. 호흡 가이드, 집중 타이머, 일기 기능을 하나의 플로우로 연결했으며, Lottie 애니메이션을 활용하여 화면 전환을 부드럽게 표현했습니다.',
     techStack: ['Figma', 'Lottie', 'ProtoPie'],
     process: ['마인드맵', '플로우차트', 'UI 키트 제작', '마이크로 인터랙션 설계', 'ProtoPie 연동'],
+    image: img8,
     featured: false,
   },
   // Exhibition 3 — AI & 디지털 아트
@@ -198,6 +219,7 @@ export const works = [
       '어린 시절 동화책에서 꺼낸 듯한 따뜻한 3D 일러스트 씬입니다. 기억 속 동화의 한 장면을 현대적인 3D 기술로 재현하여, 어른도 다시 느낄 수 있는 동심의 세계를 표현했습니다. 부드러운 조명과 파스텔 색감으로 아늑하고 몽환적인 분위기를 연출했습니다.',
     techStack: ['Blender', 'Substance Painter'],
     process: ['레퍼런스 수집', '씬 구성', '모델링 및 리깅', '텍스처링', '라이팅 및 렌더링'],
+    image: img9,
     featured: false,
   },
   {
@@ -215,6 +237,7 @@ export const works = [
       '서울의 일상적인 소리와 풍경을 모션그래픽으로 재해석한 작품입니다. 출퇴근 지하철 소음, 시장의 활기, 한강의 정적 등 서울 곳곳의 소리를 채집하고, 각 소리의 파형을 시각 요소로 변환하여 독자적인 도시 초상화를 완성했습니다.',
     techStack: ['After Effects', 'Premiere Pro', 'Cinema 4D'],
     process: ['사운드 채집', '파형 분석', '모션 그래픽 설계', '영상 편집', '사운드 믹싱'],
+    image: img10,
     featured: false,
   },
   {
@@ -232,6 +255,7 @@ export const works = [
       '네온 빛으로 피어난 미래의 정원을 담은 디지털 아트 시리즈입니다. 멸종 위기의 식물들을 사이버펑크 미학으로 재탄생시켜, 기술 문명과 자연의 공존 가능성을 탐구합니다. Stable Diffusion과 직접 제작한 LoRA 모델을 활용하여 일관된 세계관을 구축했습니다.',
     techStack: ['Stable Diffusion', 'Photoshop', 'Midjourney'],
     process: ['세계관 기획', 'LoRA 모델 훈련', '이미지 생성 실험', '후보정 작업', '시리즈 편집'],
+    image: img11,
     featured: false,
   },
   {
@@ -249,6 +273,7 @@ export const works = [
       '도시의 데이터를 실시간으로 시각화하는 인터랙티브 웹 작품입니다. 서울시 공공 API를 활용하여 대중교통 혼잡도, 미세먼지 수치, 유동 인구를 실시간 애니메이션으로 표현합니다. 도시가 살아 숨쉬는 유기체처럼 느껴지도록 설계한 데이터 아트 작품입니다.',
     techStack: ['p5.js', 'D3.js', 'Seoul Open API'],
     process: ['데이터 탐색', '시각화 알고리즘 설계', '인터랙션 구현', '실시간 API 연동', '퍼포먼스 최적화'],
+    image: img12,
     featured: false,
   },
 ];

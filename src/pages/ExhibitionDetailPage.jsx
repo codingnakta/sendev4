@@ -85,7 +85,13 @@ export default function ExhibitionDetailPage() {
         <div className="ex-works-grid">
           {exhibitionWorks.map((work) => (
             <Link key={work.id} to={`/works/${work.id}`} className="ex-work-card">
-              <div className="ex-work-img" style={{ background: work.color }}>
+              <div
+                className="ex-work-img"
+                style={work.image
+                  ? { backgroundImage: `url(${work.image})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+                  : { background: work.color }
+                }
+              >
                 <div className="ex-work-img-overlay" />
               </div>
               <div className="ex-work-body">
