@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import './PortfolioGuideSection.css';
 
 export default function PortfolioGuideSection({ guide }) {
@@ -13,9 +14,9 @@ export default function PortfolioGuideSection({ guide }) {
               <span className="portfolio-badge">✨ AI 포트폴리오</span>
               <h2 className="portfolio-title">{guide.title}</h2>
               <p className="portfolio-desc">{guide.description}</p>
-              <button className="portfolio-btn">
+              <Link to="/mypage?tab=ai" className="portfolio-btn">
                 {guide.cta} <span>→</span>
-              </button>
+              </Link>
             </div>
 
             <div className="portfolio-features">

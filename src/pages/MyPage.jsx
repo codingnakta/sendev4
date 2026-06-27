@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { works, exhibitions, myPageUser } from '../data/dummyData';
 import './MyPage.css';
 
@@ -33,7 +33,10 @@ function savePortfolioDraft(data) {
 }
 
 export default function MyPage() {
-  const [activeTab, setActiveTab] = useState('내 작품');
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(
+    searchParams.get('tab') === 'ai' ? 'AI 포트폴리오' : '내 작품'
+  );
 
   const user = myPageUser;
   const myWorks = works.filter((w) => user.myWorkIds.includes(w.id));
