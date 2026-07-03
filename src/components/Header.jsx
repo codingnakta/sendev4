@@ -60,10 +60,10 @@ export default function Header() {
               </button>
               <button
                 className="profile-btn"
-                aria-label="프로필"
+                aria-label={user ? '프로필' : '로그인'}
                 onClick={handleProfileClick}
               >
-                {user?.displayName?.[0] || 'S'}
+                {user?.displayName?.[0] || <LoginIcon />}
               </button>
               {user && (
                 <button className="icon-btn" aria-label="로그아웃" onClick={handleLogout}>
@@ -109,6 +109,16 @@ function LogoutIcon() {
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
       <polyline points="16 17 21 12 16 7" />
       <line x1="21" y1="12" x2="9" y2="12" />
+    </svg>
+  );
+}
+
+function LoginIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+      <polyline points="10 17 15 12 10 7" />
+      <line x1="15" y1="12" x2="3" y2="12" />
     </svg>
   );
 }

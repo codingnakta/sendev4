@@ -1,19 +1,29 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
 import './AuthPage.css';
 
 const AUTH_ERROR_MESSAGES = {
-  'auth/email-already-in-use': '이미 사용 중인 이메일 주소입니다.',
-  'auth/invalid-email': '올바른 이메일 주소를 입력해주세요.',
-  'auth/weak-password': '비밀번호가 너무 약합니다. 8자 이상으로 설정해주세요.',
+  'auth/account-exists-with-different-credential': '이미 다른 방식으로 가입된 이메일입니다.',
+  'auth/popup-blocked': '팝업이 차단되었습니다. 브라우저 팝업 차단을 해제해주세요.',
   'auth/network-request-failed': '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
 };
 
 function getAuthErrorMessage(err) {
   return AUTH_ERROR_MESSAGES[err.code] || '회원가입 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+}
+
+function GoogleIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+    </svg>
+  );
 }
 
 const MAJORS = [
@@ -28,11 +38,9 @@ export default function SignupPage() {
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [googleUser, setGoogleUser] = useState(null);
 
   const [form, setForm] = useState({
-    email: '',
-    password: '',
-    passwordConfirm: '',
     name: '',
     username: '',
     major: '',
@@ -57,16 +65,6 @@ export default function SignupPage() {
     }));
   };
 
-  const validateStep1 = () => {
-    const e = {};
-    if (!form.email.includes('@')) e.email = '올바른 이메일 주소를 입력해주세요.';
-    if (form.password.length < 8) e.password = '비밀번호는 8자 이상이어야 합니다.';
-    if (form.password !== form.passwordConfirm) e.passwordConfirm = '비밀번호가 일치하지 않습니다.';
-    if (!form.agreeTerms || !form.agreePrivacy) e.agree = '필수 약관에 동의해주세요.';
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
-
   const validateStep2 = () => {
     const e = {};
     if (!form.name.trim()) e.name = '이름을 입력해주세요.';
@@ -76,25 +74,40 @@ export default function SignupPage() {
     return Object.keys(e).length === 0;
   };
 
-  const handleNext = async () => {
-    if (step === 1 && validateStep1()) {
-      setStep(2);
+  const handleGoogleSignup = async () => {
+    if (!form.agreeTerms || !form.agreePrivacy) {
+      setErrors((prev) => ({ ...prev, agree: '필수 약관에 동의해주세요.' }));
       return;
     }
-    if (step === 2 && validateStep2()) {
+    setSubmitting(true);
+    try {
+      const credential = await signInWithPopup(auth, new GoogleAuthProvider());
+      setGoogleUser(credential.user);
+      set('name', credential.user.displayName || '');
+      setStep(2);
+    } catch (err) {
+      if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
+        setErrors((prev) => ({ ...prev, submit: getAuthErrorMessage(err) }));
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleNext = async () => {
+    if (step === 2 && validateStep2() && googleUser) {
       setSubmitting(true);
       try {
-        const credential = await createUserWithEmailAndPassword(auth, form.email, form.password);
-        await updateProfile(credential.user, { displayName: form.name });
-        await setDoc(doc(db, 'users', credential.user.uid), {
+        await setDoc(doc(db, 'users', googleUser.uid), {
           name: form.name,
+          email: googleUser.email || '',
           username: form.username,
           major: form.major,
           university: form.university,
           interests: form.interests,
           agreeMarketing: form.agreeMarketing,
           createdAt: new Date().toISOString(),
-        });
+        }, { merge: true });
         setStep(3);
       } catch (err) {
         setErrors((prev) => ({ ...prev, submit: getAuthErrorMessage(err) }));
@@ -128,7 +141,7 @@ export default function SignupPage() {
               <div className="step-line" style={{ width: step === 2 ? '100%' : '0%' }} />
             </div>
             <p className="step-label">
-              {step === 1 ? '계정 정보를 입력해주세요' : '프로필을 설정해주세요'}
+              {step === 1 ? '약관에 동의하고 Google로 가입해주세요' : '프로필을 설정해주세요'}
             </p>
           </>
         )}
@@ -136,48 +149,6 @@ export default function SignupPage() {
         {/* Step 1 */}
         {step === 1 && (
           <div className="auth-form">
-            <div className="form-group">
-              <label className="form-label">이메일 <span className="required">*</span></label>
-              <input
-                className={`form-input ${errors.email ? 'error' : ''}`}
-                type="email"
-                placeholder="example@email.com"
-                value={form.email}
-                onChange={(e) => set('email', e.target.value)}
-              />
-              {errors.email && <p className="form-error">{errors.email}</p>}
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">비밀번호 <span className="required">*</span></label>
-              <input
-                className={`form-input ${errors.password ? 'error' : ''}`}
-                type="password"
-                placeholder="8자 이상 입력해주세요"
-                value={form.password}
-                onChange={(e) => set('password', e.target.value)}
-              />
-              {errors.password && <p className="form-error">{errors.password}</p>}
-              {form.password && (
-                <PasswordStrength password={form.password} />
-              )}
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">비밀번호 확인 <span className="required">*</span></label>
-              <input
-                className={`form-input ${errors.passwordConfirm ? 'error' : ''}`}
-                type="password"
-                placeholder="비밀번호를 다시 입력해주세요"
-                value={form.passwordConfirm}
-                onChange={(e) => set('passwordConfirm', e.target.value)}
-              />
-              {errors.passwordConfirm && <p className="form-error">{errors.passwordConfirm}</p>}
-              {form.passwordConfirm && form.password === form.passwordConfirm && (
-                <p className="form-success">✓ 비밀번호가 일치합니다</p>
-              )}
-            </div>
-
             <div className="agree-section">
               <label className="agree-all-row">
                 <input
@@ -213,10 +184,11 @@ export default function SignupPage() {
                 </label>
               ))}
               {errors.agree && <p className="form-error">{errors.agree}</p>}
+              {errors.submit && <p className="form-error">{errors.submit}</p>}
             </div>
 
-            <button className="btn-auth-primary" onClick={handleNext}>
-              다음으로 →
+            <button className="btn-auth-primary social-btn google" onClick={handleGoogleSignup} disabled={submitting}>
+              <GoogleIcon /> {submitting ? '처리 중...' : 'Google로 회원가입'}
             </button>
 
             <p className="auth-switch">
@@ -315,7 +287,7 @@ export default function SignupPage() {
             <div className="success-icon">🎉</div>
             <h2 className="success-title">가입 완료!</h2>
             <p className="success-desc">
-              <strong>{form.name || form.email}</strong>님,<br />
+              <strong>{form.name || googleUser?.email}</strong>님,<br />
               Showfolio에 오신 것을 환영합니다!<br />
               지금 바로 첫 작품을 등록해보세요.
             </p>
@@ -331,34 +303,6 @@ export default function SignupPage() {
           </div>
         )}
       </div>
-    </div>
-  );
-}
-
-function PasswordStrength({ password }) {
-  const score =
-    (password.length >= 8 ? 1 : 0) +
-    (/[A-Z]/.test(password) ? 1 : 0) +
-    (/[0-9]/.test(password) ? 1 : 0) +
-    (/[^A-Za-z0-9]/.test(password) ? 1 : 0);
-
-  const labels = ['', '약함', '보통', '강함', '매우 강함'];
-  const colors = ['', '#ff6b6b', '#ffd93d', '#4ecdc4', '#3cc8b4'];
-
-  return (
-    <div className="password-strength">
-      <div className="strength-bars">
-        {[1, 2, 3, 4].map((s) => (
-          <div
-            key={s}
-            className="strength-bar"
-            style={{ background: score >= s ? colors[score] : '#e8edf5' }}
-          />
-        ))}
-      </div>
-      <span className="strength-label" style={{ color: colors[score] }}>
-        {labels[score]}
-      </span>
     </div>
   );
 }

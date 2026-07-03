@@ -1,10 +1,46 @@
 import { useEffect, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
-import { myPageUser } from '../data/dummyData';
-import { getWorks, getExhibitions } from '../data/repository';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+import {
+  getWorks, getExhibitions, getUserProfile, saveUserProfile, isProfileComplete,
+} from '../data/repository';
 import './MyPage.css';
 
 const TABS = ['내 작품', '좋아요한 작품', '참여 전시회', 'AI 포트폴리오'];
+
+const MAJORS = [
+  '시각디자인', 'UI/UX 디자인', '영상/미디어', '일러스트레이션',
+  '제품디자인', '3D/모션', '그래픽디자인', '사진', '파인아트', '기타',
+];
+
+const INTERESTS = ['UI/UX', '일러스트', '3D', '그래픽', '영상', '브랜딩', '제품디자인', 'AI아트', '타이포그래피', '사진'];
+
+const AVATAR_COLORS = 'linear-gradient(135deg, #3cc8b4 0%, #2aa898 100%)';
+
+// Firestore 프로필 문서 → 화면용 형태 (없는 값은 안전한 기본값)
+function toProfileView(profile, authUser) {
+  return {
+    name: profile.name || authUser.displayName || '이름 없음',
+    username: profile.username?.startsWith('@') ? profile.username : `@${profile.username || ''}`,
+    avatar: authUser.photoURL || profile.avatarUrl || null,
+    avatarColor: profile.avatarColor || AVATAR_COLORS,
+    bio: profile.bio || '아직 소개가 없습니다. 프로필을 편집해 나를 소개해보세요 ✦',
+    major: profile.major || '',
+    university: profile.university || '',
+    badge: profile.badge || '루키',
+    following: profile.followingCount ?? 0,
+    followers: profile.followerCount ?? 0,
+    joinDate: formatJoinDate(profile.createdAt),
+    likedWorks: profile.likedWorkIds ?? [],
+    myWorkIds: profile.myWorkIds ?? [],
+  };
+}
+
+function formatJoinDate(createdAt) {
+  const d = createdAt?.toDate ? createdAt.toDate() : (createdAt ? new Date(createdAt) : null);
+  if (!d || Number.isNaN(d.getTime())) return '최근';
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+}
 
 const TARGET_JOBS = [
   '프론트엔드 개발자', '백엔드 개발자', '풀스택 개발자',
@@ -35,21 +71,65 @@ function savePortfolioDraft(data) {
 
 export default function MyPage() {
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { user: authUser, authLoading } = useAuth();
+
   const [activeTab, setActiveTab] = useState(
     searchParams.get('tab') === 'ai' ? 'AI 포트폴리오' : '내 작품'
   );
   const [works, setWorks] = useState([]);
   const [exhibitions, setExhibitions] = useState([]);
+  const [profile, setProfile] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(true);
+  const [editing, setEditing] = useState(false);
+
+  // 로그인 안 했으면 로그인 페이지로
+  useEffect(() => {
+    if (!authLoading && !authUser) navigate('/login');
+  }, [authLoading, authUser, navigate]);
+
+  // 본인 프로필 로드
+  useEffect(() => {
+    if (!authUser) return;
+    setProfileLoading(true);
+    getUserProfile(authUser.uid)
+      .then(setProfile)
+      .finally(() => setProfileLoading(false));
+  }, [authUser]);
 
   useEffect(() => {
     getWorks().then(setWorks);
     getExhibitions().then(setExhibitions);
   }, []);
 
-  const user = myPageUser;
+  // 온보딩/편집 완료 콜백 — 저장 후 로컬 상태 갱신
+  const handleOnboarded = (savedProfile) => {
+    setProfile(savedProfile);
+    setEditing(false);
+  };
+
+  // 로딩 / 미로그인
+  if (authLoading || (authUser && profileLoading)) {
+    return <div className="mypage-loading"><span className="spinner" /> 불러오는 중...</div>;
+  }
+  if (!authUser) return null; // 리다이렉트 진행 중
+
+  // 첫 방문(구글 가입 직후, 필수 정보 없음) 또는 프로필 편집 중 → 온보딩 폼
+  if (!isProfileComplete(profile) || editing) {
+    return (
+      <Onboarding
+        authUser={authUser}
+        existing={profile}
+        onDone={handleOnboarded}
+        onCancel={editing ? () => setEditing(false) : null}
+      />
+    );
+  }
+
+  const user = toProfileView(profile, authUser);
   const myWorks = works.filter((w) => user.myWorkIds.includes(w.id));
   const likedWorks = works.filter((w) => user.likedWorks.includes(w.id));
-  const myExhibitions = exhibitions.filter((_, i) => i < 2);
+  const myExhibitions = exhibitions.filter((ex) => (profile.exhibitionIds ?? []).includes(ex.id));
 
   return (
     <main className="mypage">
@@ -99,7 +179,7 @@ export default function MyPage() {
             </div>
           </div>
           <div className="profile-actions">
-            <button className="btn-edit-profile">프로필 편집</button>
+            <button className="btn-edit-profile" onClick={() => setEditing(true)}>프로필 편집</button>
             <button className="btn-share-profile">공유</button>
           </div>
         </div>
@@ -206,6 +286,177 @@ export default function MyPage() {
         )}
       </div>
     </main>
+  );
+}
+
+// ── 첫 방문 온보딩 ──
+// 구글 가입 직후엔 프로필 정보가 없다. 필수 정보를 받아 Firestore에 저장한다.
+function Onboarding({ authUser, existing, onDone, onCancel }) {
+  const [form, setForm] = useState({
+    name: existing?.name || authUser.displayName || '',
+    username: existing?.username?.replace(/^@/, '') || '',
+    university: existing?.university || '',
+    major: existing?.major || '',
+    bio: existing?.bio || '',
+    interests: existing?.interests || [],
+  });
+  const [errors, setErrors] = useState({});
+  const [saving, setSaving] = useState(false);
+
+  const set = (k, v) => {
+    setForm((prev) => ({ ...prev, [k]: v }));
+    setErrors((prev) => ({ ...prev, [k]: '' }));
+  };
+
+  const toggleInterest = (tag) => {
+    setForm((prev) => ({
+      ...prev,
+      interests: prev.interests.includes(tag)
+        ? prev.interests.filter((t) => t !== tag)
+        : prev.interests.length >= 3 ? prev.interests : [...prev.interests, tag],
+    }));
+  };
+
+  const handleSubmit = async () => {
+    const e = {};
+    if (!form.name.trim()) e.name = '이름을 입력해주세요.';
+    if (form.username.trim().length < 2) e.username = '닉네임은 2자 이상이어야 합니다.';
+    if (!form.major) e.major = '전공을 선택해주세요.';
+    setErrors(e);
+    if (Object.keys(e).length > 0) return;
+
+    setSaving(true);
+    try {
+      await saveUserProfile(authUser.uid, {
+        name: form.name.trim(),
+        username: form.username.trim(),
+        email: authUser.email || '',
+        university: form.university.trim(),
+        major: form.major,
+        bio: form.bio.trim(),
+        interests: form.interests,
+        avatarUrl: authUser.photoURL || '',
+        badge: existing?.badge || '루키',
+        followerCount: existing?.followerCount ?? 0,
+        followingCount: existing?.followingCount ?? 0,
+        likedWorkIds: existing?.likedWorkIds ?? [],
+        myWorkIds: existing?.myWorkIds ?? [],
+        onboarded: true,
+      }, { isNew: !existing });
+      const saved = await getUserProfile(authUser.uid);
+      onDone(saved);
+    } catch {
+      setErrors((prev) => ({ ...prev, submit: '프로필 저장에 실패했습니다. 잠시 후 다시 시도해주세요.' }));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="onboarding-page">
+      <div className="onboarding-card">
+        <h1 className="onboarding-title">{onCancel ? '프로필 편집 ✦' : '프로필 설정 ✦'}</h1>
+        <p className="onboarding-desc">
+          {onCancel ? (
+            <>내 정보를 수정하고 저장해보세요.</>
+          ) : (
+            <>
+              <strong>{authUser.displayName || authUser.email}</strong>님, 환영합니다!<br />
+              마이페이지를 만들려면 프로필 정보를 입력해주세요.
+            </>
+          )}
+        </p>
+
+        <div className="onboarding-form">
+          <div className="ob-group">
+            <label className="ob-label">이름 <span className="ob-req">*</span></label>
+            <input
+              className={`ob-input ${errors.name ? 'error' : ''}`}
+              type="text"
+              placeholder="실명을 입력해주세요"
+              value={form.name}
+              onChange={(e) => set('name', e.target.value)}
+            />
+            {errors.name && <p className="ob-error">{errors.name}</p>}
+          </div>
+
+          <div className="ob-group">
+            <label className="ob-label">닉네임 <span className="ob-req">*</span></label>
+            <input
+              className={`ob-input ${errors.username ? 'error' : ''}`}
+              type="text"
+              placeholder="영문, 숫자, 언더스코어 사용 가능"
+              value={form.username}
+              onChange={(e) => set('username', e.target.value)}
+            />
+            {errors.username && <p className="ob-error">{errors.username}</p>}
+          </div>
+
+          <div className="ob-group">
+            <label className="ob-label">학교</label>
+            <input
+              className="ob-input"
+              type="text"
+              placeholder="재학 중인 학교명"
+              value={form.university}
+              onChange={(e) => set('university', e.target.value)}
+            />
+          </div>
+
+          <div className="ob-group">
+            <label className="ob-label">전공 / 분야 <span className="ob-req">*</span></label>
+            <select
+              className={`ob-input ${errors.major ? 'error' : ''}`}
+              value={form.major}
+              onChange={(e) => set('major', e.target.value)}
+            >
+              <option value="">전공을 선택해주세요</option>
+              {MAJORS.map((m) => <option key={m} value={m}>{m}</option>)}
+            </select>
+            {errors.major && <p className="ob-error">{errors.major}</p>}
+          </div>
+
+          <div className="ob-group">
+            <label className="ob-label">한 줄 소개</label>
+            <textarea
+              className="ob-input"
+              rows={2}
+              placeholder="나를 소개하는 한 문장을 적어보세요"
+              value={form.bio}
+              onChange={(e) => set('bio', e.target.value)}
+            />
+          </div>
+
+          <div className="ob-group">
+            <label className="ob-label">관심 분야 <span className="ob-sub">(최대 3개)</span></label>
+            <div className="ob-chips">
+              {INTERESTS.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  className={`ob-chip ${form.interests.includes(tag) ? 'selected' : ''}`}
+                  onClick={() => toggleInterest(tag)}
+                  disabled={!form.interests.includes(tag) && form.interests.length >= 3}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {errors.submit && <p className="ob-error">{errors.submit}</p>}
+
+          <div className="ob-actions">
+            {onCancel && (
+              <button className="ob-cancel" onClick={onCancel} disabled={saving}>취소</button>
+            )}
+            <button className="ob-submit" onClick={handleSubmit} disabled={saving}>
+              {saving ? <><span className="spinner" /> 저장 중...</> : (onCancel ? '저장하기' : '마이페이지 시작하기 →')}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
