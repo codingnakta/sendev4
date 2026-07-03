@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 import './styles/global.css';
 import './styles/App.css';
 
@@ -12,13 +12,24 @@ import NoticePage from './pages/NoticePage';
 import MyPage from './pages/MyPage';
 import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
+import KakaoCallbackPage from './pages/KakaoCallbackPage';
+import CylinderGallery from './components/CylinderGallery';
+
+function SiteLayout() {
+  return (
+    <div className="app">
+      <Header />
+      <Outlet />
+      <Footer />
+    </div>
+  );
+}
 
 export default function App() {
   return (
     <BrowserRouter>
-      <div className="app">
-        <Header />
-        <Routes>
+      <Routes>
+        <Route element={<SiteLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/exhibitions/:id" element={<ExhibitionDetailPage />} />
           <Route path="/works/:id" element={<WorkDetailPage />} />
@@ -27,10 +38,11 @@ export default function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/auth/kakao/callback" element={<KakaoCallbackPage />} />
           <Route path="*" element={<HomePage />} />
-        </Routes>
-        <Footer />
-      </div>
+        </Route>
+        <Route path="/gallery" element={<CylinderGallery />} />
+      </Routes>
     </BrowserRouter>
   );
 }

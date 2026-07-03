@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import './Header.css';
 
 const NAV_ITEMS = [
@@ -14,8 +15,18 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
 
-  const isAuthPage = ['/signup', '/login'].includes(location.pathname);
+  const isAuthPage = ['/signup', '/login', '/auth/kakao/callback'].includes(location.pathname);
+
+  const handleProfileClick = () => {
+    navigate(user ? '/mypage' : '/login');
+  };
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/');
+  };
 
   return (
     <header className="header">
@@ -50,10 +61,15 @@ export default function Header() {
               <button
                 className="profile-btn"
                 aria-label="프로필"
-                onClick={() => navigate('/mypage')}
+                onClick={handleProfileClick}
               >
-                S
+                {user?.displayName?.[0] || 'S'}
               </button>
+              {user && (
+                <button className="icon-btn" aria-label="로그아웃" onClick={handleLogout}>
+                  <LogoutIcon />
+                </button>
+              )}
             </div>
 
             <button
@@ -83,6 +99,16 @@ function SearchIcon() {
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="11" cy="11" r="8" />
       <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+}
+
+function LogoutIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <polyline points="16 17 21 12 16 7" />
+      <line x1="21" y1="12" x2="9" y2="12" />
     </svg>
   );
 }

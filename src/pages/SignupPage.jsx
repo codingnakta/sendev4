@@ -1,6 +1,20 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
 import './AuthPage.css';
+
+const AUTH_ERROR_MESSAGES = {
+  'auth/email-already-in-use': '이미 사용 중인 이메일 주소입니다.',
+  'auth/invalid-email': '올바른 이메일 주소를 입력해주세요.',
+  'auth/weak-password': '비밀번호가 너무 약합니다. 8자 이상으로 설정해주세요.',
+  'auth/network-request-failed': '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+};
+
+function getAuthErrorMessage(err) {
+  return AUTH_ERROR_MESSAGES[err.code] || '회원가입 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+}
 
 const MAJORS = [
   '시각디자인', 'UI/UX 디자인', '영상/미디어', '일러스트레이션',
@@ -13,6 +27,7 @@ export default function SignupPage() {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
 
   const [form, setForm] = useState({
     email: '',
@@ -61,9 +76,32 @@ export default function SignupPage() {
     return Object.keys(e).length === 0;
   };
 
-  const handleNext = () => {
-    if (step === 1 && validateStep1()) setStep(2);
-    else if (step === 2 && validateStep2()) setStep(3);
+  const handleNext = async () => {
+    if (step === 1 && validateStep1()) {
+      setStep(2);
+      return;
+    }
+    if (step === 2 && validateStep2()) {
+      setSubmitting(true);
+      try {
+        const credential = await createUserWithEmailAndPassword(auth, form.email, form.password);
+        await updateProfile(credential.user, { displayName: form.name });
+        await setDoc(doc(db, 'users', credential.user.uid), {
+          name: form.name,
+          username: form.username,
+          major: form.major,
+          university: form.university,
+          interests: form.interests,
+          agreeMarketing: form.agreeMarketing,
+          createdAt: new Date().toISOString(),
+        });
+        setStep(3);
+      } catch (err) {
+        setErrors((prev) => ({ ...prev, submit: getAuthErrorMessage(err) }));
+      } finally {
+        setSubmitting(false);
+      }
+    }
   };
 
   const handleComplete = () => navigate('/');
@@ -260,9 +298,13 @@ export default function SignupPage() {
               </div>
             </div>
 
+            {errors.submit && <p className="form-error">{errors.submit}</p>}
+
             <div className="btn-row">
-              <button className="btn-auth-secondary" onClick={() => setStep(1)}>← 이전</button>
-              <button className="btn-auth-primary" onClick={handleNext}>가입 완료 →</button>
+              <button className="btn-auth-secondary" onClick={() => setStep(1)} disabled={submitting}>← 이전</button>
+              <button className="btn-auth-primary" onClick={handleNext} disabled={submitting}>
+                {submitting ? '가입 처리 중...' : '가입 완료 →'}
+              </button>
             </div>
           </div>
         )}

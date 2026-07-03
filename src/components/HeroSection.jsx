@@ -1,6 +1,9 @@
+import { useNavigate } from 'react-router-dom';
 import './HeroSection.css';
 
 export default function HeroSection() {
+  const navigate = useNavigate();
+
   return (
     <section className="hero">
       <div className="hero-inner container">
@@ -16,7 +19,7 @@ export default function HeroSection() {
             온라인 전시 플랫폼입니다.
           </p>
           <div className="hero-buttons">
-            <button className="btn-primary">
+            <button className="btn-primary" onClick={() => navigate('/gallery')}>
               전시회 둘러보기 <span className="btn-arrow">→</span>
             </button>
             <button className="btn-secondary">작품 등록하기</button>

@@ -1,6 +1,24 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../firebase';
 import './AuthPage.css';
+
+const AUTH_ERROR_MESSAGES = {
+  'auth/invalid-credential': '이메일 또는 비밀번호가 올바르지 않습니다.',
+  'auth/invalid-email': '올바른 이메일 주소를 입력해주세요.',
+  'auth/user-not-found': '가입되지 않은 이메일입니다.',
+  'auth/wrong-password': '이메일 또는 비밀번호가 올바르지 않습니다.',
+  'auth/too-many-requests': '너무 많이 시도했습니다. 잠시 후 다시 시도해주세요.',
+  'auth/network-request-failed': '네트워크 오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+  'auth/account-exists-with-different-credential': '이미 다른 방식으로 가입된 이메일입니다.',
+  'auth/popup-blocked': '팝업이 차단되었습니다. 브라우저 팝업 차단을 해제해주세요.',
+};
+
+function getAuthErrorMessage(err) {
+  return AUTH_ERROR_MESSAGES[err.code] || '로그인 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+}
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -13,21 +31,60 @@ export default function LoginPage() {
     setErrors((prev) => ({ ...prev, [key]: '', general: '' }));
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     const e = {};
     if (!form.email.includes('@')) e.email = '올바른 이메일 주소를 입력해주세요.';
     if (!form.password) e.password = '비밀번호를 입력해주세요.';
     if (Object.keys(e).length > 0) { setErrors(e); return; }
 
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    try {
+      await signInWithEmailAndPassword(auth, form.email, form.password);
       navigate('/mypage');
-    }, 1200);
+    } catch (err) {
+      setErrors((prev) => ({ ...prev, general: getAuthErrorMessage(err) }));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') handleLogin();
+  };
+
+  const handleKakaoLogin = () => {
+    if (!window.Kakao) {
+      setErrors((prev) => ({ ...prev, general: '카카오 SDK를 불러오지 못했습니다.' }));
+      return;
+    }
+    if (!window.Kakao.isInitialized()) {
+      window.Kakao.init(import.meta.env.VITE_KAKAO_JS_KEY);
+    }
+
+    // 카카오 JS SDK v2는 팝업 로그인을 지원하지 않아 인가 코드 방식(리다이렉트)으로 진행 —
+    // 로그인 완료 후 KakaoCallbackPage(/auth/kakao/callback)에서 이어서 처리한다.
+    window.Kakao.Auth.authorize({
+      redirectUri: `${window.location.origin}/auth/kakao/callback`,
+    });
+  };
+
+  const handleGoogleLogin = async () => {
+    setLoading(true);
+    try {
+      const credential = await signInWithPopup(auth, new GoogleAuthProvider());
+      await setDoc(doc(db, 'users', credential.user.uid), {
+        name: credential.user.displayName || '',
+        email: credential.user.email || '',
+        createdAt: new Date().toISOString(),
+      }, { merge: true });
+      navigate('/mypage');
+    } catch (err) {
+      if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
+        setErrors((prev) => ({ ...prev, general: getAuthErrorMessage(err) }));
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -98,10 +155,10 @@ export default function LoginPage() {
           </div>
 
           <div className="social-btns">
-            <button className="social-btn google">
+            <button type="button" className="social-btn google" onClick={handleGoogleLogin} disabled={loading}>
               <GoogleIcon /> Google로 계속하기
             </button>
-            <button className="social-btn kakao">
+            <button type="button" className="social-btn kakao" onClick={handleKakaoLogin} disabled={loading}>
               <KakaoIcon /> 카카오로 계속하기
             </button>
           </div>
