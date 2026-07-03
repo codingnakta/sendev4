@@ -1,0 +1,66 @@
+rules_version = '2';
+
+// Showfolio Firestore 보안 규칙
+// 배포: Firebase 콘솔 → Firestore Database → 규칙 탭에 붙여넣고 "게시"
+// (또는 Firebase CLI: firebase deploy --only firestore:rules)
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() { return request.auth != null; }
+    function isOwner(uid) { return isSignedIn() && request.auth.uid == uid; }
+
+    // ── 사용자 프로필 ──
+    // 프로필은 누구나 조회 가능(아티스트 페이지 등), 수정은 본인만
+    match /users/{uid} {
+      allow read: if true;
+      allow create, update, delete: if isOwner(uid);
+
+      // 내가 좋아요한 작품 목록
+      match /likedWorks/{workId} {
+        allow read: if true;
+        allow write: if isOwner(uid);
+      }
+      // AI 포트폴리오 초안 — 본인만
+      match /portfolios/{portfolioId} {
+        allow read, write: if isOwner(uid);
+      }
+      // 팔로잉/팔로워
+      match /following/{targetUid} {
+        allow read: if true;
+        allow write: if isOwner(uid);
+      }
+      match /followers/{followerUid} {
+        allow read: if true;
+        allow write: if isSignedIn() && request.auth.uid == followerUid;
+      }
+    }
+
+    // ── 전시회 ──
+    // 조회는 공개, 생성/수정은 운영자만(콘솔·서버에서 관리) → 클라이언트 쓰기 차단
+    match /exhibitions/{exhibitionId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // ── 작품 ──
+    // 조회는 공개, 작성자 본인만 생성/수정/삭제
+    match /works/{workId} {
+      allow read: if true;
+      allow create: if isSignedIn() && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
+
+      // 좋아요(누가 눌렀는지) — 로그인 사용자가 자기 문서만
+      match /likes/{uid} {
+        allow read: if true;
+        allow write: if isOwner(uid);
+      }
+    }
+
+    // ── 공지사항 ──
+    // 조회는 공개, 작성은 운영자만(콘솔 전용) → 클라이언트 쓰기 차단
+    match /notices/{noticeId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}

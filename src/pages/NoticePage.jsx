@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { notices } from '../data/dummyData';
+import { useEffect, useState } from 'react';
+import { getNotices } from '../data/repository';
 import './NoticePage.css';
 
 const CATEGORIES = ['전체', '공지', '이벤트', '업데이트'];
@@ -7,6 +7,11 @@ const CATEGORIES = ['전체', '공지', '이벤트', '업데이트'];
 export default function NoticePage() {
   const [activeTab, setActiveTab] = useState('전체');
   const [openId, setOpenId] = useState(null);
+  const [notices, setNotices] = useState([]);
+
+  useEffect(() => {
+    getNotices().then(setNotices);
+  }, []);
 
   const filtered =
     activeTab === '전체' ? notices : notices.filter((n) => n.category === activeTab);

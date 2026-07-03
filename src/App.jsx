@@ -12,7 +12,6 @@ import NoticePage from './pages/NoticePage';
 import MyPage from './pages/MyPage';
 import SignupPage from './pages/SignupPage';
 import LoginPage from './pages/LoginPage';
-import KakaoCallbackPage from './pages/KakaoCallbackPage';
 import CylinderGallery from './components/CylinderGallery';
 
 function SiteLayout() {
@@ -38,7 +37,6 @@ export default function App() {
           <Route path="/mypage" element={<MyPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/auth/kakao/callback" element={<KakaoCallbackPage />} />
           <Route path="*" element={<HomePage />} />
         </Route>
         <Route path="/gallery" element={<CylinderGallery />} />

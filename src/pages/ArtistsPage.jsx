@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { works } from '../data/dummyData';
+import { getWorks } from '../data/repository';
 import './ArtistsPage.css';
 
 // 작품 데이터에서 아티스트 목록을 추출해 집계
@@ -41,6 +41,11 @@ export default function ArtistsPage() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('전체');
   const [sort, setSort] = useState('views');
+  const [works, setWorks] = useState([]);
+
+  useEffect(() => {
+    getWorks().then(setWorks);
+  }, []);
 
   const allArtists = buildArtists(works);
 

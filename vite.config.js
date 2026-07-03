@@ -1,6 +1,5 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
-import { issueKakaoCustomToken } from './api/_kakaoAuth.js'
 
 export default defineConfig(({ mode }) => {
   // .env.local에서 환경변수 로드 (Node.js 서버 컨텍스트 — 브라우저에 노출 안 됨)
@@ -105,39 +104,6 @@ ${additionalRequest ? `[추가 요청사항]\n${additionalRequest}` : ''}
             res.statusCode = 200
             res.setHeader('Content-Type', 'application/json')
             res.end(JSON.stringify({ success: true, result }))
-          } catch (err) {
-            res.statusCode = 500
-            res.setHeader('Content-Type', 'application/json')
-            res.end(JSON.stringify({ success: false, error: err.message }))
-          }
-        })
-      })
-
-      server.middlewares.use('/api/kakao-auth', (req, res) => {
-        if (req.method !== 'POST') {
-          res.statusCode = 405
-          res.setHeader('Content-Type', 'application/json')
-          res.end(JSON.stringify({ success: false, error: 'POST 요청만 허용됩니다.' }))
-          return
-        }
-
-        let body = ''
-        req.on('data', (chunk) => { body += chunk.toString() })
-        req.on('end', async () => {
-          try {
-            const { code, redirectUri } = JSON.parse(body)
-            if (!code || !redirectUri) throw new Error('code와 redirectUri가 필요합니다.')
-
-            const restApiKey = env.KAKAO_REST_API_KEY
-            if (!restApiKey) throw new Error('KAKAO_REST_API_KEY 환경 변수가 설정되지 않았습니다.')
-
-            const serviceAccountJson = env.FIREBASE_SERVICE_ACCOUNT_KEY
-            if (!serviceAccountJson) throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY 환경 변수가 설정되지 않았습니다.')
-
-            const result = await issueKakaoCustomToken({ code, redirectUri, restApiKey, serviceAccountJson })
-            res.statusCode = 200
-            res.setHeader('Content-Type', 'application/json')
-            res.end(JSON.stringify({ success: true, ...result }))
           } catch (err) {
             res.statusCode = 500
             res.setHeader('Content-Type', 'application/json')

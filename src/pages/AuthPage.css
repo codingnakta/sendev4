@@ -465,14 +465,6 @@ input[type="checkbox"] {
 
 .social-btn:hover { background: #f8faff; border-color: #d0d5e0; }
 
-.social-btn.kakao {
-  background: #FEE500;
-  border-color: #FEE500;
-  color: #3C1E1E;
-}
-
-.social-btn.kakao:hover { background: #f5db00; }
-
 /* Switch */
 .auth-switch {
   font-size: 0.82rem;

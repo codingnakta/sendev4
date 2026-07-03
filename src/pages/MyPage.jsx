@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { works, exhibitions, myPageUser } from '../data/dummyData';
+import { myPageUser } from '../data/dummyData';
+import { getWorks, getExhibitions } from '../data/repository';
 import './MyPage.css';
 
 const TABS = ['내 작품', '좋아요한 작품', '참여 전시회', 'AI 포트폴리오'];
@@ -37,6 +38,13 @@ export default function MyPage() {
   const [activeTab, setActiveTab] = useState(
     searchParams.get('tab') === 'ai' ? 'AI 포트폴리오' : '내 작품'
   );
+  const [works, setWorks] = useState([]);
+  const [exhibitions, setExhibitions] = useState([]);
+
+  useEffect(() => {
+    getWorks().then(setWorks);
+    getExhibitions().then(setExhibitions);
+  }, []);
 
   const user = myPageUser;
   const myWorks = works.filter((w) => user.myWorkIds.includes(w.id));

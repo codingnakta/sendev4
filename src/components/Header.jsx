@@ -17,7 +17,7 @@ export default function Header() {
   const location = useLocation();
   const { user, logout } = useAuth();
 
-  const isAuthPage = ['/signup', '/login', '/auth/kakao/callback'].includes(location.pathname);
+  const isAuthPage = ['/signup', '/login'].includes(location.pathname);
 
   const handleProfileClick = () => {
     navigate(user ? '/mypage' : '/login');

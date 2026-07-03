@@ -1,11 +1,30 @@
+import { useEffect, useState } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { exhibitions, works } from '../data/dummyData';
+import { getExhibition, getExhibitions, getWorks } from '../data/repository';
 import './ExhibitionDetailPage.css';
 
 export default function ExhibitionDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const exhibition = exhibitions.find((e) => e.id === Number(id));
+  const [exhibition, setExhibition] = useState(null);
+  const [works, setWorks] = useState([]);
+  const [exhibitions, setExhibitions] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+    Promise.all([getExhibition(id), getWorks(), getExhibitions()])
+      .then(([ex, w, exs]) => {
+        setExhibition(ex);
+        setWorks(w);
+        setExhibitions(exs);
+      })
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) {
+    return <div className="not-found"><p>불러오는 중...</p></div>;
+  }
 
   if (!exhibition) {
     return (
